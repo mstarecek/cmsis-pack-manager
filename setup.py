@@ -16,8 +16,10 @@
 # limitations under the License.
 
 import os
-from setuptools import setup
+import platform
 from pathlib import Path
+
+from setuptools import setup
 
 # Get the directory containing this setup.py. Even though full paths are used below, we must
 # chdir in order for setuptools-scm to successfully pick up the version.
@@ -51,15 +53,24 @@ def build_native(spec):
             header_filename=lambda: build.find_header('cmsis.h', in_path='cmsis-cffi')
         )
     else:
+        cmd_extras = []
+        target_infix = ''
+        if platform.system() == 'Windows':
+            if platform.architecture()[0] == '64bit':
+                target_infix = 'x86_64-pc-windows-msvc'
+            else:
+                target_infix = 'i686-pc-windows-msvc'
+            cmd_extras.append(f'--target={target_infix}')
+
         build = spec.add_external_build(
-            cmd=['cargo', 'build', '--release', '--lib'],
+            cmd=['cargo', 'build', '--release', '--lib'] + cmd_extras,
             path=RUST_DIR
         )
 
         spec.add_cffi_module(
             module_path='cmsis_pack_manager._native',
             dylib=lambda: build.find_dylib('cmsis_cffi',
-                                           in_path='target/release/deps'),
+                                           in_path=f'target/{target_infix}/release/deps'),
             header_filename=lambda: build.find_header('cmsis.h', in_path='cmsis-cffi')
         )
 

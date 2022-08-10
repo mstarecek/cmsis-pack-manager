@@ -9,7 +9,7 @@ jobs:
       matrix:
         os: [windows-latest]
     env:
-      CIBW_SKIP: "cp27-* cp34-* cp35-* cp36-* pp* *-win32"
+      CIBW_SKIP: "cp27-* cp34-* cp35-* cp36-* pp*"
       CIBW_BEFORE_BUILD: "python -m pip install --upgrade pip wheel setuptools setuptools_scm"
       CIBW_BUILD_VERBOSITY: 1
       RUSTFLAGS: "-Ctarget-feature=+crt-static"
@@ -23,11 +23,12 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
+          target: [x86_64-pc-windows-msvc, i686-pc-windows-msvc]
 
       - uses: actions/setup-python@v2
         name: Install Python
         with:
-          python-version: '3.7'
+          python-version: "3.7"
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.1.3

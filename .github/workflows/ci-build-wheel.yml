@@ -45,10 +45,15 @@ jobs:
         with:
           platforms: arm64
 
+      # Assuming 64bit version is installed as default
+      - name: Install Rust i686-pc-windows-msvc
+        if: runner.os == 'Windows'
+        run: rustup target add i686-pc-windows-msvc
+
       - uses: actions/setup-python@v2
         name: Install Python
         with:
-          python-version: '3.7'
+          python-version: "3.7"
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.1.3
